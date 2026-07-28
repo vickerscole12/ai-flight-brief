@@ -45,7 +45,7 @@ of the box — NOTAMs are a bonus layer if you choose to wire up a provider.
 
 ## Tech stack
 
-- **Python (Flask)** — backend API, external data fetching, route math, and
+- **Python** — backend API, external data fetching, route math, and
   the Gemini API call
 - **HTML** — page structure (`templates/index.html`)
 - **CSS** — styling, linked as a standalone stylesheet (`static/style.css`)
