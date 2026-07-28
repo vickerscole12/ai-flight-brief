@@ -8,8 +8,7 @@ LLM synthesis step.
 Built as a portfolio project to demonstrate API integration, backend data
 pipelines, and applied GenAI (turning structured/raw data into a readable
 narrative), wrapped in a from-scratch HTML/CSS/JS front end. The AI
-synthesis step uses Google's Gemini API, which has a genuinely free,
-non-expiring tier — no credit card and no trial-credit countdown.
+synthesis step uses Google's free Gemini API.
 
 ## What it does
 
