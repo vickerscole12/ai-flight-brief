@@ -1,4 +1,4 @@
-# Aero Brief — GenAI Pre-Flight Briefing Assistant - Claude Code Experiment 
+# Aero Brief, A GenAI Pre-Flight Briefing Assistant - Claude Code Experiment 
 
 Aero Brief takes two airport codes (departure and arrival) and generates a
 plain-language pre-flight briefing — the kind of summary a dispatcher or
