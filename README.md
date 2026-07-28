@@ -42,9 +42,6 @@ Rather than fake NOTAM data or only support U.S. airports, this app:
 - Shifts the AI briefing's focus toward weather hazards and flight-plan
   context whenever NOTAMs aren't available
 
-This means the app works fully, for any airport pair worldwide, right out
-of the box — NOTAMs are a bonus layer if you choose to wire up a provider.
-
 ## Tech stack
 
 - **Python** — backend API, external data fetching, route math, and
