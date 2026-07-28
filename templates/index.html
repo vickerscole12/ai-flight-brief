@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aero Brief — AI Pre-Flight Briefing</title>
+
+  <!-- Google Fonts: IBM Plex Mono for raw/coded data, IBM Plex Sans for the human-readable briefing -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Stylesheet, linked the standard way -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <div class="scanline-overlay" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="app-header__mark">
+      <span class="app-header__glyph">&#9992;</span>
+      <span class="app-header__title">AERO BRIEF</span>
+    </div>
+    <p class="app-header__subtitle">AI-synthesized pre-flight briefings from live weather &amp; NOTAM data</p>
+  </header>
+
+  <main class="app-main">
+
+    <!-- Input strip: styled like a flight progress strip used on an ATC board -->
+    <section class="flight-strip" aria-label="Route input">
+      <form id="briefing-form" class="flight-strip__form">
+        <div class="flight-strip__field">
+          <label for="departure">Departure (ICAO)</label>
+          <input
+            type="text"
+            id="departure"
+            name="departure"
+            maxlength="4"
+            placeholder="KJFK"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="flight-strip__arrow" aria-hidden="true">&#8594;</div>
+
+        <div class="flight-strip__field">
+          <label for="arrival">Arrival (ICAO)</label>
+          <input
+            type="text"
+            id="arrival"
+            name="arrival"
+            maxlength="4"
+            placeholder="EGLL"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <button type="submit" id="generate-btn" class="flight-strip__submit">
+          Generate briefing
+        </button>
+      </form>
+      <p id="form-error" class="flight-strip__error" role="alert" hidden></p>
+    </section>
+
+    <!-- Loading state -->
+    <section id="loading-state" class="loading-state" hidden aria-live="polite">
+      <div class="loading-state__spinner" aria-hidden="true"></div>
+      <p id="loading-message">Requesting live data&hellip;</p>
+    </section>
+
+    <!-- Results -->
+    <section id="results" class="results" hidden>
+
+      <!-- Route summary -->
+      <div class="panel route-summary" id="route-summary">
+        <h2 class="panel__label">Route summary</h2>
+        <div id="route-summary-content" class="route-summary__content"></div>
+      </div>
+
+      <!-- Weather side by side -->
+      <div class="weather-grid">
+        <div class="panel weather-panel" id="departure-weather">
+          <h2 class="panel__label panel__label--sky">Departure weather</h2>
+          <div class="weather-panel__content"></div>
+        </div>
+        <div class="panel weather-panel" id="arrival-weather">
+          <h2 class="panel__label panel__label--sky">Arrival weather</h2>
+          <div class="weather-panel__content"></div>
+        </div>
+      </div>
+
+      <!-- NOTAMs (only shown if data is available) -->
+      <div class="panel notam-panel" id="notam-panel" hidden>
+        <h2 class="panel__label panel__label--amber">Active NOTAMs</h2>
+        <div class="notam-panel__content"></div>
+      </div>
+
+      <!-- AI-synthesized briefing, styled as a teletype transmission slip -->
+      <div class="transmission" id="transmission">
+        <div class="transmission__header">
+          <span>BRIEFING TRANSMISSION</span>
+          <span id="transmission-timestamp" class="transmission__timestamp"></span>
+        </div>
+        <div class="transmission__body" id="transmission-body"></div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>Weather via aviationweather.gov &middot; Briefing synthesis via Claude &middot; For portfolio/demo use only — not for real-world flight planning</p>
+  </footer>
+
+  <!-- JavaScript, linked the standard way -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

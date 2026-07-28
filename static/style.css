@@ -1,0 +1,438 @@
+/* ============================================================
+   AERO BRIEF — Stylesheet
+   Design concept: a night-shift flight dispatch office. Raw data
+   (METAR/TAF/NOTAM codes, airport IDs) is rendered in a monospace
+   "teletype" face; the AI-written narrative is rendered in a
+   humanist sans, so the type change itself signals "this part has
+   been decoded for you."
+   ============================================================ */
+
+:root {
+  /* Color tokens */
+  --bg-void: #12161a;
+  --bg-panel: #1b2129;
+  --bg-raised: #232a33;
+  --ink: #e9e6dd;
+  --ink-dim: #8b94a0;
+  --amber: #e3a146;
+  --sky: #4fa3c6;
+  --line: #2b323b;
+  --danger: #c1615a;
+
+  /* Type tokens */
+  --font-mono: "IBM Plex Mono", "Courier New", monospace;
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+
+  /* Layout tokens */
+  --radius: 3px;
+  --max-width: 880px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-void);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Subtle scanline texture over the whole page, evoking an old CRT
+   dispatch-room monitor. Kept very faint so it never fights legibility. */
+.scanline-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.015) 0px,
+    rgba(255, 255, 255, 0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 1;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+
+.app-header {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.app-header__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.app-header__glyph {
+  font-size: 1.4rem;
+  color: var(--amber);
+  transform: rotate(45deg);
+  display: inline-block;
+}
+
+.app-header__title {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.4rem;
+  letter-spacing: 0.18em;
+}
+
+.app-header__subtitle {
+  margin: 0.6rem 0 0;
+  color: var(--ink-dim);
+  font-size: 0.95rem;
+}
+
+/* ============================================================
+   Main layout
+   ============================================================ */
+
+.app-main {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ============================================================
+   Flight strip (route input)
+   Modeled after a paper flight progress strip on an ATC board:
+   a single horizontal row of fields.
+   ============================================================ */
+
+.flight-strip {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.flight-strip__form {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.flight-strip__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.flight-strip__field label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
+}
+
+.flight-strip__field input {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  padding: 0.6rem 0.75rem;
+  width: 7ch;
+}
+
+.flight-strip__field input:focus-visible {
+  outline: 2px solid var(--sky);
+  outline-offset: 2px;
+}
+
+.flight-strip__arrow {
+  color: var(--ink-dim);
+  font-size: 1.3rem;
+  padding-bottom: 0.6rem;
+}
+
+.flight-strip__submit {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: var(--amber);
+  color: #16130c;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75rem 1.4rem;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.flight-strip__submit:hover {
+  filter: brightness(1.08);
+}
+
+.flight-strip__submit:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.flight-strip__error {
+  margin: 0.9rem 0 0;
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+   Loading state
+   ============================================================ */
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--ink-dim);
+  padding: 1rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+/* This rule is required: without it, the flex display rule above wins
+   the cascade over the browser's built-in [hidden] { display: none }
+   rule, so setting the hidden attribute in JS would have no visible
+   effect and the spinner would appear to run constantly. */
+.loading-state[hidden] {
+  display: none;
+}
+
+.loading-state__spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--line);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================================
+   Shared panel styling
+   ============================================================ */
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+}
+
+.panel__label {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-dim);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.6rem;
+}
+
+.panel__label--sky {
+  color: var(--sky);
+}
+
+.panel__label--amber {
+  color: var(--amber);
+}
+
+/* Route summary */
+
+.route-summary__content {
+  font-size: 0.95rem;
+}
+
+.route-summary__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.route-summary__row:last-child {
+  border-bottom: none;
+}
+
+.route-summary__row span:first-child {
+  color: var(--ink-dim);
+}
+
+.route-summary__row span:last-child {
+  font-family: var(--font-mono);
+}
+
+/* Weather grid */
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.weather-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.weather-panel__airport-name {
+  font-size: 0.9rem;
+  color: var(--ink-dim);
+  margin: -0.3rem 0 0.3rem;
+}
+
+.weather-panel__code-block {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  background: var(--bg-raised);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+  word-break: break-word;
+  border-left: 3px solid var(--sky);
+}
+
+.weather-panel__code-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.3rem;
+}
+
+.weather-panel__unavailable {
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  font-style: italic;
+}
+
+/* NOTAMs */
+
+.notam-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.notam-panel__item {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: var(--bg-raised);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.75rem;
+  word-break: break-word;
+}
+
+/* ============================================================
+   Transmission slip — the signature element.
+   Styled like a torn teletype printout: dashed perforated edges,
+   a timestamp readout, and a monospace header.
+   ============================================================ */
+
+.transmission {
+  background: var(--bg-raised);
+  border: 1px dashed var(--ink-dim);
+  border-radius: var(--radius);
+  position: relative;
+}
+
+.transmission__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--amber);
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px dashed var(--line);
+}
+
+.transmission__timestamp {
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+}
+
+.transmission__body {
+  padding: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ============================================================
+   Footer
+   ============================================================ */
+
+.app-footer {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 1rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.app-footer p {
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
+/* ============================================================
+   Responsive: down to mobile
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .weather-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flight-strip__form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .flight-strip__arrow {
+    display: none;
+  }
+
+  .flight-strip__field input {
+    width: 100%;
+  }
+
+  .transmission__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .loading-state__spinner {
+    animation: none;
+  }
+}
