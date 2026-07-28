@@ -19,10 +19,9 @@ synthesis step uses Google's free Gemini API.
 2. The backend fetches, in real time:
    - **METAR / TAF weather** for both airports, from the free public
      [aviationweather.gov API](https://aviationweather.gov/data/api/)
-     (this covers airports worldwide, not just the U.S.)
    - **Airport info** (name, city, country, coordinates, elevation) from a
      small curated local dataset
-   - **NOTAMs**, best-effort, if a NOTAM data provider is configured (see
+   - **NOTAMs**, or Notice to Airmen, are best-effort, if a NOTAM data provider is configured (see
      "About NOTAM coverage" below)
 3. It calculates route info: great-circle distance, initial heading, and
    an estimated flight time.
@@ -34,7 +33,7 @@ synthesis step uses Google's free Gemini API.
 **NOTAM coverage is intentionally best-effort.** Unlike weather, there
 isn't a single free, reliable, globally-comprehensive NOTAM API. The FAA
 publishes an official NOTAM API, but it requires a registered developer
-key and covers U.S. airports far more reliably than international ones.
+key and covers U.S. airports far more reliably than other countries.
 Rather than fake NOTAM data or only support U.S. airports, this app:
 
 - Attempts a live NOTAM fetch if `NOTAM_API_KEY` is configured
@@ -107,9 +106,9 @@ flight-briefing-app/
 
 ## Try it with
 
-- `KJFK` → `EGLL` (New York to London — a well-covered U.S./international pair)
-- `RJTT` → `WSSS` (Tokyo to Singapore — a fully international route)
-- `KDEN` → `KLAX` (Denver to Los Angeles — a domestic U.S. route)
+- `KJFK` → `EGLL` (New York to London)
+- `RJTT` → `WSSS` (Tokyo to Singapore)
+- `KDEN` → `KLAX` (Denver to Los Angeles)
 
 ## Notes / limitations
 
@@ -118,9 +117,6 @@ flight-briefing-app/
 - The curated airport dataset covers roughly 100 major world airports; an
   airport not in the list will still generate a briefing, just without
   full name/city/coordinate detail.
-- This project is for portfolio/demo purposes and is **not** a real flight
-  planning tool — always use official sources (like your national aviation
-  authority or a certified EFB) for actual flight operations.
 
 ## Possible extensions
 
