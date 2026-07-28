@@ -26,7 +26,7 @@ synthesis step uses Google's free Gemini API.
 4. All of that structured data is handed to Gemini, which synthesizes it
    into a single plain-English briefing.
 
-## About NOTAM
+## About NOTAM coverage
 
 **NOTAM coverage is intentionally best-effort.** Unlike weather, there
 isn't a single free, reliable, globally-comprehensive NOTAM API. The FAA
