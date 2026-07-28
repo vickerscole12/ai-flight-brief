@@ -1,15 +1,16 @@
 # Aero Brief, A GenAI Pre-Flight Briefing Assistant - Claude Code Experiment 
 
 Aero Brief takes two airport codes (departure and arrival) and generates a
-plain-language pre-flight briefing — the kind of summary a dispatcher or
-pilot would want to read — by combining live aviation weather data with an
+plain-language pre-flight briefing by combining live aviation weather data with an
 LLM synthesis step.
 
 Built as a portfolio project to demonstrate API integration, backend data
 pipelines, and applied GenAI (turning structured/raw data into a readable
 narrative), wrapped in a from-scratch HTML/CSS/JS front end. The AI
 synthesis step uses Google's free Gemini API.
+
 <img width="1523" height="876" alt="image" src="https://github.com/user-attachments/assets/2e33003c-e127-4bcc-8f41-37d5bd79f483" />
+
 <img width="1527" height="799" alt="image" src="https://github.com/user-attachments/assets/b4e7f5d7-f632-4550-88ff-2a399a841c5c" />
 
 ## What it does
